@@ -445,10 +445,10 @@ def permutation_copulation(a1: Permutation, a2: Permutation,
 
 def main():
     rng = random.Random(time.time())
-    base_data = setup("big")
+    base_data = setup("medium")
     solve_random_attempts(base_data, rng)
     # solve_once(base_data, key_ungreedy_r2c2)
-    # genetic_algorithm_2(base_data, rng)
+    # genetic_algorithm_1(base_data, rng)
 
 
 #
