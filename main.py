@@ -8,7 +8,7 @@ import numpy as np
 
 class Rect:
     """_o variables are original, other variables are extended"""
-    
+
     def __init__(self, r1, c1, r2, c2):
         self.r1_o = r1
         """First row of this rectangle.
@@ -38,16 +38,16 @@ class Rect:
         self.c1 = self.c1_o
         self.r2 = self.r2_o
         self.c2 = self.c2_o
-    
+
     def reset_extensions(self):
         self.r1 = self.r1_o
         self.c1 = self.c1_o
         self.r2 = self.r2_o
         self.c2 = self.c2_o
-    
+
     def area_o(self):
         return (self.r2_o - self.r1_o) * (self.c2_o - self.c1_o)
-    
+
     def area_x(self):
         return (self.r2 - self.r1) * (self.c2 - self.c1)
 
@@ -88,14 +88,14 @@ def setup(file_name: str) -> BaseData:
             line = file.readline()[:base_data.C]
             for c in range(base_data.C):
                 base_data.grid_bits[r, c] = char_to_bit(line[c])
-    
+
     if print_stuff:
         print(f"Solving {base_data.file_name}"
               f" with R={base_data.R}, C={base_data.C},"
               f" L={base_data.L}, H={base_data.H}...")
         print("GRID BITS")
         print(base_data.grid_bits.astype(np.int))
-    
+
     base_data.shapes = []
     for i in range(1, base_data.H + 1):
         for j in range(1, i + 1):
@@ -103,9 +103,9 @@ def setup(file_name: str) -> BaseData:
                 if i != j:
                     base_data.shapes.append((j, i))
                 base_data.shapes.append((i, j))
-    
+
     sliding_window_validation(base_data)
-    
+
     return base_data
 
 
@@ -146,16 +146,16 @@ def solve(base_data: BaseData):
             grid_takens[rect.r1:rect.r2, rect.c1:rect.c2] = True
             rectangles_in_cover.append(rect)
     t2 = time.time()
-    
+
     if print_stuff:
         print("GRID TAKEN")
         print(grid_takens.astype(np.int))
         print(f"Time took (s):    {t2 - t1}")
         print(f"Score:    {calc_score(rectangles_in_cover)}"
               f"/{base_data.R*base_data.C}")
-    
+
     stretch(base_data, rectangles_in_cover, grid_takens)
-    
+
     return rectangles_in_cover
 
 
@@ -222,7 +222,7 @@ def stretch(base_data: BaseData, rectangles_in_cover: List[Rect],
             else:
                 break
     t2 = time.time()
-    
+
     if print_stuff:
         print("GRID TAKEN")
         print(grid_takens.astype(np.int))
@@ -270,15 +270,15 @@ def solve_once(base_data: BaseData, key: RectKeyFunction):
 
 def solve_random_attempts(base_data: BaseData, rng: random.Random):
     random_weights = []
-    
+
     def key_random_weights(rect: Rect):
         if len(random_weights) == 0:
             random_weights.extend(
-                    [rng.uniform(-1, 1), rng.uniform(-1, 1),
-                     rng.uniform(-1, 1)])
+                [rng.uniform(-1, 1), rng.uniform(-1, 1),
+                 rng.uniform(-1, 1)])
         return rect.r1 * random_weights[0] + rect.c1 * random_weights[1] \
                + rect.area_x() * random_weights[2]
-    
+
     best_score = -1
     for iteration in range(9999):
         seed = "".join(rng.choice(string.ascii_letters) for _ in range(64))
@@ -347,7 +347,7 @@ def genetic_algorithm_2(base_data: BaseData, rng: random.Random):
         random_permutation = current_best_permutation.copy()
         mutate_permutation(random_permutation, rng, times=97)
         base_data.possible_rects = sort_rects_by_permutation(
-                base_data.possible_rects, random_permutation)
+            base_data.possible_rects, random_permutation)
         solution = solve(base_data)
         score = calc_score(solution)
         if best_score < score:
@@ -390,12 +390,12 @@ def genetic_algorithm_3(base_data: BaseData, rng: random.Random):
         rng.shuffle(adults)
         for j in range(0, population_size, 2):
             children.extend(
-                    permutation_copulation(adults[j], adults[j + 1], rng))
+                permutation_copulation(adults[j], adults[j + 1], rng))
         adults.extend(children)
         scores: Dict[Permutation, int] = {}
         for index, permutation in enumerate(adults):
             base_data.possible_rects = sort_rects_by_permutation(
-                    base_data.possible_rects, permutation)
+                base_data.possible_rects, permutation)
             solution = solve(base_data)
             scores[index] = calc_score(solution)
         adult_indexes = list(range(len(adults)))
@@ -436,7 +436,7 @@ def permutation_copulation(a1: Permutation, a2: Permutation,
         if item_1 not in child_2_set:
             child_2_set.add(item_1)
             child_2.append(item_1)
-    
+
     # rotate
     child_1 = child_1[start:] + child_1[:start]
     child_2 = child_2[start:] + child_2[:start]
